@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>1f14b35c-eda5-41d2-82fd-0dee0ebde15c</UserSecretsId>
+    <DefineConstants>FABLE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Navbar.fs" />
+    <Compile Include="SidePanelMenu.fs" />
+    <Compile Include="Table.fs" />
+    <Compile Include="Layout.fs" />
+    <Compile Include="Index.fs" />
+  </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
+</Project>

@@ -1,0 +1,16 @@
+source https://api.nuget.org/v3/index.json
+
+storage: none
+framework: auto-detect
+
+nuget Fable.Core
+nuget Fable.Formatting.Markdown
+nuget Fable.Remoting.json
+nuget Fable.SimpleHttp
+nuget Fable.SimpleJson
+nuget Fable.DateFunctions
+nuget Fable.Promise
+nuget Feliz
+nuget Feliz.Bulma
+nuget Feliz.Router
+nuget Fable.JsonProvider

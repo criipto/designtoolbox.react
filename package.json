@@ -1,0 +1,25 @@
+{
+    "name": "@criipto/react",
+    "private": false,
+    "version": "0.1.0",
+    "description": "Various react components",
+    "main": "Index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/criipto/react.git"
+    },
+    "author": "Criipto ApS",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/criipto/react/issues"
+    },
+    "homepage": "https://github.com/criipto/react#readme",
+    "scripts": {
+        "prebuild": "dotnet tool restore && npm install",
+        "build": "dotnet fable ./src --outDir .output/",
+        "postbuild": "cp package.json .output/ && touch .output/fable_modules/.npmignore"
+    },
+    "devDependencies": {
+        "core-js": "^3.20.2"
+    }
+}
