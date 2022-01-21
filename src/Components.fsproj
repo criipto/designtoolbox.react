@@ -6,9 +6,11 @@
     <DefineConstants>FABLE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Types.fs" />
     <Compile Include="Navbar.fs" />
     <Compile Include="SidePanelMenu.fs" />
     <Compile Include="Table.fs" />
+    <Compile Include="ViewPicker.fs" />
     <Compile Include="Layout.fs" />
     <Compile Include="Index.fs" />
   </ItemGroup>

@@ -1,0 +1,536 @@
+@import "https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css";
+@import "https://cdn.jsdelivr.net/npm/bulma-extensions@6.2.7/dist/css/bulma-extensions.min.css";
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
+@import "mixins.scss";
+
+
+$font : Helvetica;
+$hover-background: rgba(69, 128, 201, 0.2);
+$hover-text: rgba(69, 128, 201);
+$boxmargin : 32px;
+$background : #F9F8F4;
+$content-background : white;
+$text-color : #204C82;;
+$border-emphasis: solid $text-color 2px;
+$border-regular: 1px solid #EDECE8;
+
+body,html {
+    font-family: 'Raleway', serif;
+    margin:0px;
+    height: 100%;
+    background: $background;
+    color: $text-color;
+}
+
+.title{
+    font-family: "Roboto Slab", serif !important;
+    font-weight: 800;
+}
+
+.panel-icon,.icon {
+    width: 24px;
+    border: none;
+    margin-right: 10px;
+}
+
+.ledger-entry {
+    text-align: right;
+}
+ 
+.ledger-entry.amount {
+    font-weight: 200;
+    font-family: monospace;
+}
+
+.ledger-entry.balance {
+    font-weight: 50;
+    font-size: .75em;
+    font-family: monospace;
+    color: #7192bb;
+}
+
+.account-heading {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 22px;
+    vertical-align: center;
+}
+
+.icon-large.icon {
+    height: $boxmargin;
+}
+
+.logo-text {
+    font-size: 20px;
+}
+
+.logo-text > .bank {
+    font-weight: 800;
+}
+
+
+.icon.dot {
+    @include dot();
+    height: 12px !important;
+    width: 12px !important;
+}
+
+.button.reply > div.icon.reply {
+    @include reply();
+    height: 16px !important;
+    width: 16px !important;
+}
+
+div.icon.reply > span:hover, a.reply:hover {
+    color: white;
+}
+
+.icon.arrows {
+    @include arrows();
+}
+.icon.credit-card-logo {
+    @include credit-card-logo();
+    width:36px;
+    height: auto;
+}
+.icon.chart {
+    @include chart();
+}
+
+.icon.profile {
+    @include profile();
+}
+.icon.envelope {
+    @include envelope();
+}
+.icon.lamp {
+    @include lamp();
+}
+.icon.vbars {
+    @include vbars();
+}
+.icon.wineglass {
+    @include wineglass();
+}
+.icon.code {
+    @include code();
+}
+
+.icon.apartment {
+    @include apartment();
+}
+.icon.car {
+    @include car();
+}
+.icon.hand-holding-medical {
+    @include hand-holding-medical();
+}
+.icon.credit-card {
+    @include credit-card();
+}
+.icon.coins {
+    @include coins();
+}
+.icon.cardboard-box {
+    @include box();
+}
+.icon.signature {
+    @include signature();
+}
+.icon.mitid {
+    @include mitid();
+}
+.icon.power-off {
+    @include power-off();
+}
+.icon.power-off-white {
+   @include power-off-white();
+    width: 24px !important;
+    height: 24px;
+    display : inline-block;
+}
+
+
+.icon.arrows {
+    @include arrows();
+}
+.icon.credit-card-logo {
+    @include credit-card-logo();
+    width:36px;
+    height: auto;
+}
+.menu-item:hover  .icon.chart {
+    @include chart-hover();
+}
+.menu-item:hover  .icon.profile {
+    @include profile-hover();
+}
+.menu-item:hover  .icon.envelope {
+    @include envelope-hover();
+}
+.menu-item:hover  .icon.lamp {
+    @include lamp-hover();
+}
+.menu-item:hover  .icon.vbars {
+    @include vbars-hover();
+}
+.menu-item:hover  .icon.wineglass {
+    @include wineglass-hover();
+}
+.menu-item:hover  .icon.code {
+    @include code-hover();
+}
+
+
+.is-active.menu-item:hover  .icon.chart {
+    @include chart();
+}
+
+.is-active.menu-item:hover  .icon.profile {
+    @include profile();
+}
+.is-active.menu-item:hover  .icon.envelope {
+    @include envelope();
+}
+.is-active.menu-item:hover  .icon.lamp {
+    @include lamp();
+}
+.is-active.menu-item:hover  .icon.vbars {
+    @include vbars();
+}
+.is-active.menu-item:hover  .icon.wineglass {
+    @include wineglass();
+}
+.is-active.menu-item:hover  .icon.code {
+    @include code();
+}
+
+.icon.apartment {
+    @include apartment();
+}
+.icon.car {
+    @include car();
+}
+.icon.hand-holding-medical {
+    @include hand-holding-medical();
+}
+
+.icon.coins {
+    @include coins();
+}
+
+.card {
+   margin-bottom: 50px; 
+}
+.menu-item:hover {
+    color: $hover-text;
+    cursor: pointer;
+}
+
+.columns.account:hover,
+.columns.message:hover,
+.columns.message > .column:hover,
+.accordion.message-item > .accordion-header:hover {
+    background-color: $hover-background;
+    cursor: pointer;
+}
+
+
+.accordions .accordion .accordion-header.message-item {
+    padding-left : 0px;
+}
+
+section.accordions + a {
+    text-decoration: underline;
+    color:$text-color;
+}
+
+section.accordions + a:hover {
+    color:#4580c9;
+
+}
+.columns.account.header:hover,
+.sidebar-header:hover {
+    background-color: $content-background;
+    cursor: auto;
+    border: none;
+}
+
+.accordions > .accordion.message-item > .accordion-body {
+    background-color: $content-background;
+    border : none;
+}
+
+.accordion.message-item {
+    border: none;
+    border-top: $border-regular;
+}
+
+.panel-block.is-active {
+    border-bottom: $border-emphasis;
+}
+
+.panel-block:not(.is-active) {
+    border-bottom: none;
+}
+
+.panel-block:last-child {
+    border-radius: 0px;
+}
+body, .panel, .panel-block, 
+.panel-block.is-active,
+.panel-heading, .message > .column { 
+    background: $background;
+    color: $text-color;
+}
+
+.message > .column, 
+.card-content > div.content > h1.title, 
+.accordion.message-item > .accordion-header{ 
+    background: $content-background;
+}
+
+.columns.account, .columns.transaction,
+.accordions > .accordion > .accordion-header.message-item {
+    color: $text-color;
+}
+
+.card {
+    padding-bottom: 32px;
+}
+
+.columns.account,
+.columns.transaction,
+.columns.message {
+    border-top: $border-regular;
+    background: $content-background;
+}
+
+.panel-block {
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+    padding-left: 0px;
+    padding-right: 0px;
+    border-radius: 2px;
+}
+
+.panel-block.menu-item::after {
+    content: "\A";
+    white-space: pre;
+}
+
+.panel-block.menu-item {
+    margin-bottom : 8px;
+}
+
+.card-content > article.media:not(:last-child) {
+    margin-bottom : 16px;
+}
+
+.container > .card {
+    margin-bottom: 1em;
+}
+
+.navbar-item,i.fal{
+    color: $background;
+}
+
+.columns.account.header {
+    border-top : none;
+    font-weight: 700;
+    font-size: 16px;
+}
+.columns.account.header > .amount {
+   text-align: right;
+}
+.app {
+    height: 100vh;
+    color: $text-color;
+}
+
+h1 {
+    font-style: normal;
+    font-size: 24px;
+    line-height: 22px;
+    color: $text-color;
+}
+
+h2 {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+    color: $text-color;
+}
+.navbar-menu {
+    background-image: url("https://criipto.github.io/samples/static/img/bg_top.png");
+    background-size:100% 100%;
+    padding-right: 44px;
+    padding-left: $boxmargin;
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.navbar-item {
+    padding : 0px;
+    margin-right: 12px;
+}
+
+.badge {
+    position: relative;
+    top: -10px;
+    right: -10px;
+    height: 14px;
+    width: 14px;
+    padding: 0px;
+    border-radius: 50%;
+    background: hsl(348, 100%, 61%);
+    font-size: 0.7em;
+    color: $content-background;
+}
+
+.dot {
+    color: hsl(348, 100%, 61%);
+    font-size: 0.8em;
+}
+
+.message-item .from {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.accordion-content.message-item {
+    color: $text-color;
+}
+
+.dot.read {
+    display : none;
+}
+
+.message-item .subject {
+    font-size: 16px;
+}
+
+div.card-content {
+    padding-left: $boxmargin;
+    padding-right: $boxmargin;
+    padding-top: $boxmargin;
+    padding-bottom: 0px;
+}
+
+div.banner {
+    background-image: url("https://criipto.github.io/samples/static/img/banner.png");
+    height : 250px;
+    position: relative;
+}
+
+.banner-content {
+    position: absolute;
+    bottom: 24px;
+}
+.subtitle.banner,
+.title.banner {
+    color:white;
+    font-family: $font;
+    font-style: normal;
+    font-weight: bold;
+    line-height: 110%;
+}
+
+.title.banner {
+    font-size: 48px;
+}
+
+.subtitle.banner {
+    font-size: 18px;
+}
+
+.banner.overlay {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 1px;
+
+    background: linear-gradient(180deg, rgba(0, 30, 67, 0) 14.58%, #001E43 83.85%);
+    opacity: 0.5;
+}
+
+.is-child.box {
+    background-color: #EDECE8;
+    box-shadow: none;
+}
+
+.box.splash-item.tile {
+    margin-right: 32px !important;
+}
+
+.box.splash-item.tile:last-of-type {
+    margin-right: 0px !important;
+}
+
+.menu-name {
+    text-align: center;
+    width : 100%;
+    font-size : 14px;
+}
+
+.icon.menu-icon {
+    width : 100%;
+    background-size:contain;
+}
+
+.tile.splash-menu {
+    margin-top: 24px;
+}
+
+.icon.splash-item {
+    width : 100%;
+    background-size:contain;
+}
+
+.title.splash-item {
+    font-family: $font;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 120%;
+}
+
+.content.splash-item {
+    font-family: $font;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 160%;
+    color: $text-color;
+}
+
+.button.call-to-action {
+    padding: 0px 48px;
+    color: white;
+    height: 60px;
+    /* Criipto Light Blue #4580C9 */
+    background: #4580C9;
+    border-radius: 43px;
+}
+
+.tile.call-to-action {
+    text-align : center;
+}
+
+.is-40h {
+    height: 40px !important;
+}
+
+a.reply {
+    background-color: $text-color;
+    color: white;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 15px;
+    text-align: center;
+    margin-bottom: 24px;
+}

@@ -5,55 +5,57 @@ open Feliz.Bulma
 open Fable.Core
 open Criipto.React.SidePanelMenu
 open Criipto.React.Navbar
+open Criipto.React.Types
+open Criipto.React.ViewPicker
 
 module Layout = 
-    type IUserManager<'user> = 
-        abstract member HasRequestedAuthentication : unit -> bool
-        abstract member LogIn : unit -> unit
-        abstract member LogOut : unit -> unit
-        abstract member IsAuthenticated : ('user option -> unit) -> unit
     
-    type LayoutOptions<'view,'user> = {
+    type LayoutOptions<'view,'user when 'view : equality> = {
         MenuItems : MenuItemOptions<'view> list
-        ViewRenderer : 'user -> 'view option ->  ('view option -> unit) -> ReactElement
-        SplashRenderer : unit -> ReactElement
-        UserManager : IUserManager<'user>
+        View : ReactElement
+        Manager : IManager<'view,'user>
     }
     
     [<ReactComponent>]
     let internal Layout<'view,'user when 'view: equality>(options : LayoutOptions<'view,'user>) =
         let menuItems, setMenuItems = React.useState options.MenuItems
-        let view = 
-            match menuItems with
-            [] -> None
-            | _ -> 
-                menuItems
-                |> List.tryFind(fun mi -> mi.IsActive)
-                |> Option.map(fun mi -> mi.Data)
-        let setView (view : _ option) = 
+        let views = 
+            menuItems
+            |> List.map(fun m -> m.Data)
+        if views |> List.isEmpty then failwith "There must be at least one view"
+        let view,_setView = 
+            let v = 
+                match 
+                    menuItems
+                    |> List.tryFind(fun mi -> mi.IsActive)
+                    |> Option.map(fun mi -> mi.Data) with
+                Some view -> view
+                | None -> (views |> List.head)
+            React.useState v
+
+        let setView view = 
+            if view |> Option.isSome then view.Value |> _setView
             menuItems
             |> List.map(fun mi ->
                 {
                     mi with 
-                       IsActive = 
-                           view.IsSome && mi.Data = view.Value
+                       IsActive = (view |> Option.isSome) && mi.Data = view.Value
                 }
             ) |> setMenuItems
-        let (user : 'user option),setUser = React.useState None
         
-        match user with
+        let userManager = options.Manager.UserManager
+        match userManager.CurrentUser with
         None -> 
-            if options.UserManager.HasRequestedAuthentication() |> not then
+            if userManager.HasRequestedAuthentication() |> not then
                 Html.div[
-                    Navbar("Log on",fun _ -> options.UserManager.LogIn())
-                    options.SplashRenderer()
+                    Navbar("Log on",fun _ -> userManager.LogIn())
                 ]
             else
-               options.UserManager.IsAuthenticated(setUser) 
+               userManager.Authenticate() 
                Html.div[]
         | Some user -> 
             Html.div[
-                Navbar("Log off",options.UserManager.LogOut)
+                Navbar("Log off",userManager.LogOut)
                 Bulma.container [
                     Bulma.columns [
                         prop.style [
@@ -70,13 +72,13 @@ module Layout =
                                 prop.children[
                                     SidePanelMenu({
                                         MenuItems = menuItems
-                                        MenuClicked = Some >> setView
+                                        Manager = options.Manager 
                                     })
                                 ]
                             ]
                             Bulma.column [
                                 prop.children [
-                                    options.ViewRenderer user view setView
+                                    options.View
                                 ]
                             ]
                         ]

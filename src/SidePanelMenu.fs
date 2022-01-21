@@ -2,22 +2,22 @@ namespace Criipto.React
 
 open Feliz
 open Feliz.Bulma
+open Criipto.React.Types
 
 module SidePanelMenu =
     type MenuItemOptions<'a> = 
         {
           Data : 'a
-          IsActive : bool
           Notification : int option
           IconName : string option
         }
-    type SidePanelMenuOptions<'menuItem> = 
+    type SidePanelMenuOptions<'menuItem,'user when 'menuItem : equality> = 
         {
             MenuItems : MenuItemOptions<'menuItem> list
-            MenuClicked : 'menuItem -> unit
+            Manager : IManager<'menuItem,'user>
         }
     [<ReactComponent>]
-    let internal SidePanelMenu<'menuItem>(options : SidePanelMenuOptions<'menuItem>) = 
+    let internal SidePanelMenu<'menuItem,'user when 'menuItem : equality>(options : SidePanelMenuOptions<'menuItem,'user>) = 
         
         let createMenuItem (item : MenuItemOptions<_>) = 
             prop.children [
@@ -27,7 +27,7 @@ module SidePanelMenu =
                            None -> ()
                            | Some iconName -> yield iconName |> sprintf "icon %s" |> prop.className
                         match item.Notification with
-                            None -> ()
+                            None | Some 0 -> ()
                             | Some count ->
                                 yield prop.children [
                                     Html.span [prop.className "badge is-danger"; prop.text count]
@@ -43,13 +43,13 @@ module SidePanelMenu =
             options.MenuItems
             |> List.collect(fun menuItem ->
                 let className =
-                    if menuItem.IsActive then
+                    if menuItem.Data = options.Manager.ViewManager.CurrentView then
                         "is-active menu-item"
                     else
                         "menu-item"
                 Bulma.panelBlock.div [
                     prop.className className
-                    prop.onClick(fun _ -> options.MenuClicked menuItem.Data)
+                    prop.onClick(fun _ -> options.Manager.ViewManager.CurrentView <- menuItem.Data)
                     createMenuItem menuItem
                 ]::[Html.br []]
             )
