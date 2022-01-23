@@ -30,7 +30,11 @@ jobs:
       - name: restore npm packages
         run: npm install
       - name: Build dotnet
-        run: dotnet build ./src -c Release 
+        run: |
+            set -e
+            dotnet build ./src -c Release
+            cp paket.dependencies ./src
+            cp paket.lock ./src
       - name: Build JS
         run: |
             set -e
