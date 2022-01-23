@@ -3,7 +3,7 @@ import { union_type } from "./fable_modules/fable-library.3.6.2/Reflection.js";
 import { useFeliz_React__React_useState_Static_1505 } from "./fable_modules/Feliz.1.57.0/React.fs.js";
 import { ofArray, singleton, map } from "./fable_modules/fable-library.3.6.2/List.js";
 import { createElement } from "react";
-import { equals, createObj } from "./fable_modules/fable-library.3.6.2/Util.js";
+import { createObj } from "./fable_modules/fable-library.3.6.2/Util.js";
 import { Helpers_combineClasses } from "./fable_modules/Feliz.Bulma.2.18.0/ElementBuilders.fs.js";
 import { Interop_reactApi } from "./fable_modules/Feliz.1.57.0/Interop.fs.js";
 import { MenuItemOptions$1 } from "./src/SidePanelMenu.js";
@@ -83,7 +83,7 @@ export function page() {
     }, ofArray([new View(0), new View(1)]));
     const menuItems = map((tupledArg) => {
         const view = tupledArg[0];
-        return new MenuItemOptions$1(view, equals(view, currentView), void 0, void 0);
+        return new MenuItemOptions$1(view, void 0, void 0);
     }, views);
     const layoutOptions = new LayoutOptions$2(menuItems, createElement(ViewPicker, {
         views: views,

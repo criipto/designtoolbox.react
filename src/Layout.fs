@@ -19,29 +19,6 @@ module Layout =
     [<ReactComponent>]
     let internal Layout<'view,'user when 'view: equality>(options : LayoutOptions<'view,'user>) =
         let menuItems, setMenuItems = React.useState options.MenuItems
-        let views = 
-            menuItems
-            |> List.map(fun m -> m.Data)
-        if views |> List.isEmpty then failwith "There must be at least one view"
-        let view,_setView = 
-            let v = 
-                match 
-                    menuItems
-                    |> List.tryFind(fun mi -> mi.IsActive)
-                    |> Option.map(fun mi -> mi.Data) with
-                Some view -> view
-                | None -> (views |> List.head)
-            React.useState v
-
-        let setView view = 
-            if view |> Option.isSome then view.Value |> _setView
-            menuItems
-            |> List.map(fun mi ->
-                {
-                    mi with 
-                       IsActive = (view |> Option.isSome) && mi.Data = view.Value
-                }
-            ) |> setMenuItems
         
         let userManager = options.Manager.UserManager
         match userManager.CurrentUser with

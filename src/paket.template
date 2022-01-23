@@ -1,0 +1,10 @@
+type file
+id Criipto.DesignToolBox.React
+authors Criipto ApS
+description
+  A collection of various react components used to build SPAs
+files
+  bin/Release ==> lib
+  *.fsproj ==> fable
+  **\*.fs ==> fable
+  **\*.fsi ==> fable

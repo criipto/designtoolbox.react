@@ -29,6 +29,25 @@ jobs:
         run: dotnet paket restore
       - name: Build 
         run: npm run build
+      - uses: actions/upload-artifact@master
+        with:
+          name: npm-package
+          path: .output/
+      - uses: actions/upload-artifact@master
+        with:
+          name: source
+          path: src/
+  publish-npm:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_RUN_NUMBER: ${{ github.run_number }}
+    needs: build
+    steps:
+      - name: Download npm files
+        uses: actions/download-artifact@master
+        with:
+          name: npm-package
+          path: .output/
       - name: setup npm config
         run: |
             echo "//registry.npmjs.org/:_authToken=${{ secrets.NPMJS_APIKEY }}" > .npmrc
@@ -38,4 +57,30 @@ jobs:
       - name: push to npmjs
         run: npm publish --access public
         working-directory: .output/
-      
+  publish-fable:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_RUN_NUMBER: ${{ github.run_number }}
+    needs: build
+    steps:
+      - name: Download source
+        uses: actions/download-artifact@master
+        with:
+          name: source
+          path: src/
+      - name: install version tool
+        run: dotnet tool install -g aver
+        working-directory: ./src
+      - name: Pack the package
+        run: |
+            aver bin/Release/net6.0/Criipto.Signatures.Client.dll
+            dllVersion=$(aver bin/Release/net6.0/Criipto.DesignToolBox.React.dll)
+            echo "DLL version info: $dllVersion"
+            packageVersion=$(echo $dllVersion | grep AssemblyVersion | rev | cut -d' ' -f1 | rev)-alpha
+            echo "Package version: $packageVersion"
+            dotnet paket pack ../package --version "$packageVersion"
+        working-directory: ./src
+      - name: Push the package
+        run: |
+           path=$(ls ./package/*.nupkg)
+           dotnet paket push --api-key ${{ secrets.NUGET_APIKEY }} --ignoreConflicts "$path"

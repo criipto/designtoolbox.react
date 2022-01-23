@@ -68,7 +68,6 @@ let page() =
         |> List.map(fun (view,_) ->
             {
                 Data = view
-                IsActive = view = currentView
                 Notification = None
                 IconName  = None
             } : SidePanelMenu.MenuItemOptions<_>
