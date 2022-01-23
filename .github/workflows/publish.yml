@@ -68,6 +68,9 @@ jobs:
         with:
           name: source
           path: src/
+      - name: restore tools
+        run: dotnet tool restore
+        working-directory: ./src
       - name: install version tool
         run: dotnet tool install -g aver
         working-directory: ./src
