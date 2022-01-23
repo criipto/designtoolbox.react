@@ -16,8 +16,7 @@
     "homepage": "https://github.com/criipto/react#readme",
     "scripts": {
         "prebuild": "dotnet tool restore && npm install",
-        "build": "dotnet build ./src -c Release && dotnet fable ./src --outDir .output/",
-        "postbuild": "cp package.json .output/ && touch .output/fable_modules/.npmignore"
+        "build": "dotnet fable ./src --outDir .output/"
     },
     "devDependencies": {
         "core-js": "^3.20.2"

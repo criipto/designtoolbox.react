@@ -58,6 +58,7 @@ jobs:
           path: .output/
       - name: setup npm config
         run: |
+            set -e
             echo "//registry.npmjs.org/:_authToken=${{ secrets.NPMJS_APIKEY }}" > .npmrc
             npm config set scope criipto
             npm version "0.1.$GITHUB_RUN_NUMBER"
@@ -76,10 +77,11 @@ jobs:
         with:
           name: source
           path: src/
-      - name: restore tools
-        run: dotnet tool restore
-      - name: install version tool
-        run: dotnet tool install -g aver
+      - name: install tools
+        run: |
+            set -e 
+            dotnet tool install -g paket
+            dotnet tool install -g aver
         working-directory: ./src
       - name: Pack the package
         run: |
@@ -87,9 +89,9 @@ jobs:
             echo "DLL version info: $dllVersion"
             packageVersion=$(echo $dllVersion | grep AssemblyVersion | rev | cut -d' ' -f1 | rev)-alpha
             echo "Package version: $packageVersion"
-            dotnet paket pack ../package --version "$packageVersion"
+            paket pack ../package --version "$packageVersion"
         working-directory: ./src
       - name: Push the package
         run: |
            path=$(ls ./package/*.nupkg)
-           dotnet paket push --api-key ${{ secrets.NUGET_APIKEY }} --ignoreConflicts "$path"
+           paket push --api-key ${{ secrets.NUGET_APIKEY }} --ignoreConflicts "$path"
