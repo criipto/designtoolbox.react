@@ -13,6 +13,8 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  VERSION: "0.1.${{ github.run_number }}"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -51,8 +53,7 @@ jobs:
           path: src/
   publish-npm:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_RUN_NUMBER: ${{ github.run_number }}
+    
     needs: build
     steps:
       - name: Download npm files
@@ -65,7 +66,7 @@ jobs:
             set -e
             echo "//registry.npmjs.org/:_authToken=${{ secrets.NPMJS_APIKEY }}" > .npmrc
             npm config set scope criipto
-            npm version "0.1.$GITHUB_RUN_NUMBER"
+            npm version "$VERSION"
         working-directory: .output/
       - name: push to npmjs
         run: npm publish --access public
@@ -85,13 +86,10 @@ jobs:
         run: |
             set -e 
             dotnet tool install -g paket
-            dotnet tool install -g aver
         working-directory: ./src
       - name: Pack the package
         run: |
-            dllVersion=$(aver bin/Release/net6.0/Criipto.DesignToolBox.React.dll)
-            echo "DLL version info: $dllVersion"
-            packageVersion=$(echo $dllVersion | grep AssemblyVersion | rev | cut -d' ' -f1 | rev)-alpha
+            packageVersion="$VERSION"
             echo "Package version: $packageVersion"
             paket pack ../package --version "$packageVersion"
         working-directory: ./src
