@@ -27,16 +27,12 @@ jobs:
           dotnet-version: '6.x'
       - name: restore tools
         run: dotnet tool restore
-      - name: restore dotnet packages
-        run: dotnet paket restore
       - name: restore npm packages
         run: npm install
       - name: Build dotnet
         run: |
             set -e
             dotnet build ./playground/src -c Release
-            cp paket.dependencies ./src
-            cp paket.lock ./src
       - name: Build JS
         run: |
             set -e
