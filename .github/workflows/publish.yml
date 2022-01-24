@@ -78,7 +78,6 @@ jobs:
         with:
           name: source
           path: src/
-        working-directory: ./src
       - name: Pack the package
         run: dotnet pack . -c Release -o ../package -p:PackageVersion="$Version"
         working-directory: ./src
