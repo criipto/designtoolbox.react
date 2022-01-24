@@ -78,6 +78,9 @@ jobs:
         with:
           name: source
           path: src/
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.x'
       - name: Pack the package
         run: dotnet pack . -c Release -o ../package -p:PackageVersion="$Version"
         working-directory: ./src
