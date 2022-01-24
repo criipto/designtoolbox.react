@@ -17,5 +17,17 @@
   <ItemGroup>
     <Content Include="*.fsproj; **\*.fs; **\*.fsi" PackagePath="fable\" />
   </ItemGroup>
-  <Import Project="..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="Fable.Core" Version="3.6.1" />
+    <PackageReference Include="Fable.Formatting.Markdown" Version="1.0.1" />
+    <PackageReference Include="Fable.Remoting.json" Version="*" />
+    <PackageReference Include="Fable.SimpleHttp" Version="*" />
+    <PackageReference Include="Fable.SimpleJson" Version="*" />
+    <PackageReference Include="Fable.DateFunctions" Version="*" />
+    <PackageReference Include="Fable.Promise" Version="*" />
+    <PackageReference Include="Feliz" Version="*" />
+    <PackageReference Include="Feliz.Bulma" Version="*" />
+    <PackageReference Include="Feliz.Router" Version="*" />
+    <PackageReference Include="Fable.JsonProvider" Version="*" />
+  </ItemGroup>
 </Project>
