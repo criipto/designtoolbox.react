@@ -30,9 +30,7 @@ jobs:
       - name: restore npm packages
         run: npm install
       - name: Build dotnet
-        run: |
-            set -e
-            dotnet build ./playground/src -c Release
+        run: dotnet build ./playground/src -c Release
       - name: Build JS
         run: |
             set -e
@@ -82,7 +80,7 @@ jobs:
         with:
           dotnet-version: '6.x'
       - name: Pack the package
-        run: dotnet pack . -c Release -o ../package -p:PackageVersion="$Version"
+        run: dotnet pack . -c Release -o ../package -p:PackageVersion="$VERSION"
         working-directory: ./src
       - name: Push the package
         run: |
