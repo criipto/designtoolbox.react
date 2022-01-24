@@ -78,18 +78,10 @@ jobs:
         with:
           name: source
           path: src/
-      - name: install tools
-        run: |
-            set -e 
-            dotnet tool install -g paket
         working-directory: ./src
       - name: Pack the package
-        run: |
-            packageVersion="$VERSION"
-            echo "Package version: $packageVersion"
-            paket pack ../package --version "$packageVersion"
+        run: dotnet pack . -c Release -o ../package -p:PackageVersion="$Version"
         working-directory: ./src
       - name: Push the package
         run: |
-           path=$(ls ./package/*.nupkg)
-           paket push --api-key ${{ secrets.NUGET_APIKEY }} --ignoreConflicts "$path"
+           dotnet nuget push "./package/*.nupkg" --api-key ${{ secrets.NUGET_APIKEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
