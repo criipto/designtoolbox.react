@@ -9,5 +9,5 @@ module Components =
       let SidePanelMenu<'menuItem,'user when 'menuItem : equality>(options : SidePanelMenu.SidePanelMenuOptions<'menuItem,'user>) = SidePanelMenu.SidePanelMenu(options)
       let Table<'a>(options : Table.TableOptions<'a>,data : 'a list) = Table.Table(options,data)
       let Layout<'view,'user when 'view: equality>(options : Layout.LayoutOptions<'view,'user>) = Layout.Layout(options)
-      let ViewPicker<'view,'user when 'view: equality> = ViewPicker.ViewPicker<'view,'user>
+      let ViewPicker<'view,'user when 'view: equality and 'view : comparison> = ViewPicker.ViewPicker<'view,'user>
     
