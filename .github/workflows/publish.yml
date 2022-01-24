@@ -32,7 +32,7 @@ jobs:
       - name: Build dotnet
         run: |
             set -e
-            dotnet build ./src -c Release
+            dotnet build ./playground/src -c Release
             cp paket.dependencies ./src
             cp paket.lock ./src
       - name: Build JS

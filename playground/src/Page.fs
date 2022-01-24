@@ -36,12 +36,7 @@ let page() =
 
     let views = 
        [
-           Hello
-           Goodbye
-       ] |> List.map(fun v ->
-            let renderer = 
-                match v with
-                Hello -> fun _ ->
+           Some Hello,fun _ ->
                             Bulma.container [
                                 Bulma.title [
                                     prop.text "Hello"
@@ -51,7 +46,7 @@ let page() =
                                     prop.onClick (fun _ -> manager.ViewManager.CurrentView <- Goodbye)
                                 ]
                             ]
-                | Goodbye -> fun _ ->
+           Some Goodbye,fun _ ->
                                 Bulma.container [
                                     Bulma.title [
                                         prop.text "Goodbye"
@@ -61,13 +56,12 @@ let page() =
                                         prop.onClick (fun _ -> manager.ViewManager.CurrentView <- Hello)
                                     ]
                                 ] 
-            v,renderer
-       )
+       ]
     let menuItems = 
         views
         |> List.map(fun (view,_) ->
             {
-                Data = view
+                Data = view.Value
                 Notification = None
                 IconName  = None
             } : SidePanelMenu.MenuItemOptions<_>

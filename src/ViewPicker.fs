@@ -9,13 +9,15 @@ open Criipto.React.Types
 
 module ViewPicker = 
 
-
     [<ReactComponent>]
-    let ViewPicker<'view,'user when 'view : equality>(views : ('view *  ViewRenderer<'view>) list) (manager : IManager<'view,'user>)= 
+    let ViewPicker<'view,'user when 'view : equality>(views : ('view option *  ViewRenderer<'view>) list) (manager : IManager<'view,'user>)= 
         
-        let renderer = 
-            (views
-            |> List.find(fun (v,_) -> v = manager.ViewManager.CurrentView) 
-            |> snd)
+        let _,renderer = 
+            views
+            |> List.find(fun (v,_) -> 
+                match v with
+                Some v when v = manager.ViewManager.CurrentView -> true
+                | _ -> false
+            )
         
         renderer manager.ViewManager.CurrentView
