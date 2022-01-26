@@ -45,7 +45,6 @@ module FileUpload =
                                         [for i in 0..files.length - 1 -> files.Item i]    
                                     files
                                     |> List.filter(fun file -> 
-                                        printfn "Found file: %s" file.name
                                         options.Manager.Data |> Map.tryFind file.name |> Option.isNone
                                     ) |> List.iter(fun file ->
                                         let reader = Browser.Dom.FileReader.Create()

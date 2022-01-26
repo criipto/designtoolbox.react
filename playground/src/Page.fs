@@ -4,10 +4,12 @@ open Feliz.Bulma
 open Criipto.React
 open Criipto.React.ViewPicker
 open Feliz
+open Person
 
 type View =
     Hello
     | Goodbye
+
 
 [<ReactComponent>]
 let Page() = 
@@ -15,6 +17,9 @@ let Page() =
     let currentView,setView = React.useState Hello
     let user,setUser = 0 |> Some |> React.useState
     let errors,setErrors = React.useState []
+    let (person : Person),setPerson = React.useState {Name = "me"; ShoeSize = 48}
+    let files,setFiles = React.useState Map.empty
+    
     let manager = {
         new IManager<_,_,_> with
             member __.UserManager with get() = 
@@ -41,7 +46,20 @@ let Page() =
                         member __.Clear() = [] |> setErrors
                 }
     }
-    let files,setFiles = React.useState Map.empty
+    
+    let inlineEditor = 
+        InlineEditor {
+            DisplayElement = DisplayPerson
+            EditElement = EditPerson
+            Manager = 
+                {
+                    new Types.IDataManager<_,Person> with
+                        member __.SystemManager with get() = manager
+                        member __.Data
+                                with get() = person
+                                and set value = setPerson value
+                }
+        }
     let views = 
        [
            Some Hello,fun _ ->
@@ -60,6 +78,7 @@ let Page() =
                                     InputFieldLabel = "Document to sign"
                                     IsFullWidth = false
                                 } : FileUpload.FileUploadOptions<_>)
+                                inlineEditor
                                 Bulma.button.a [
                                     prop.text "Say goodbye"
                                     prop.onClick (fun _ -> manager.ViewManager.CurrentView <- Goodbye)

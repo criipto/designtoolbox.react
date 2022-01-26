@@ -6,41 +6,68 @@ open Feliz.Bulma
 module InlineEditor = 
 
     type InlineEditorOptions<'manager,'data> = {
-        DisplayElement : 'data -> ReactElement
-        EditElement : 'data -> ReactElement
+        DisplayElement : Types.IDataManager<'manager,'data> -> ReactElement
+        EditElement : Types.IDataManager<'manager,'data> -> ReactElement
         Manager : Types.IDataManager<'manager,'data>
     }
 
     [<ReactComponent>]
     let InlineEditor<'err,'view,'user,'data when 'view : equality> (options : InlineEditorOptions<Types.IManager<'err,'view,'user>,'data>) = 
         let isEditing, changeMode = React.useState false
+        let tempData, setTempData = React.useState options.Manager.Data
+        let internalManager = 
+            {
+                new Types.IDataManager<_,_> with
+                    member __.SystemManager with get() = options.Manager.SystemManager
+                    member __.Data
+                            //edits are made to a temp copy of the data
+                            with get() = tempData
+                            and set value = setTempData value
+            }
         let views = 
             [
                 Some true, fun _ -> 
                         Bulma.container [
-                            Bulma.icon [
-                                prop.onClick(fun _ -> isEditing |> not |> changeMode )
+                            Bulma.button.a [
+                                prop.onClick(fun _ -> 
+                                    isEditing |> not |> changeMode
+                                    //propagate the changes back to the source
+                                    options.Manager.Data <- tempData
+                                )
                                 prop.children [
-                                    Html.i [
-                                        prop.className "fas fa-close"
+                                    Bulma.icon [
+                                        prop.children [
+                                            Html.i [
+                                                prop.className "fas fa-close"
+                                            ]
+                                        ]
                                     ]
+                                    Html.span "Save"
                                 ]
                             ]
-                            options.EditElement options.Manager.Data
+                            options.EditElement internalManager
                         ]
                 Some false, fun _ -> 
                         Bulma.container [
-                            Bulma.icon [
+                            Bulma.button.a [
                                 prop.onClick(fun _ -> isEditing |> not |> changeMode )
                                 prop.children [
-                                    Html.i [
-                                        prop.className "fas fa-pen"
+                                    Bulma.icon [
+                                        prop.children [
+                                            Html.i [
+                                                prop.className "fas fa-pen"
+                                            ]
+                                        ]
                                     ]
+                                    Html.span "Edit"
                                 ]
                             ]
-                            options.DisplayElement options.Manager.Data
+                            //using the internal manager effectively makes it read only
+                            //any accidental changes to the data in display mode will be disregarded
+                            options.DisplayElement internalManager
                         ]
             ]
+
         ViewPicker.ViewPicker(views) { new IManager<'err,bool,'user> with
                                             member __.UserManager with get() = options.Manager.SystemManager.UserManager
                                             member __.ViewManager with get() = 
