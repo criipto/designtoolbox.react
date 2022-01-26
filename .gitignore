@@ -354,3 +354,4 @@ local.settings.json
 .DS_Store
 node_modules/
 .paket/
+**/.webpack/

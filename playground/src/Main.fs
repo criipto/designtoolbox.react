@@ -7,6 +7,6 @@ open Fable.Core.JsInterop
 importSideEffects "./styles/global.scss"
 
 ReactDOM.render(
-    Page.page(),
+    Page.Page(),
     document.getElementById "feliz-app"
 )

@@ -10,14 +10,14 @@ open Criipto.React.ViewPicker
 
 module Layout = 
     
-    type LayoutOptions<'view,'user when 'view : equality> = {
+    type LayoutOptions<'err,'view,'user when 'view : equality> = {
         MenuItems : MenuItemOptions<'view> list
-        View : ReactElement
-        Manager : IManager<'view,'user>
+        Element : ReactElement
+        Manager : IManager<'err,'view,'user>
     }
     
     [<ReactComponent>]
-    let internal Layout<'view,'user when 'view: equality>(options : LayoutOptions<'view,'user>) =
+    let internal Layout<'err,'view,'user when 'view: equality>(options : LayoutOptions<'err,'view,'user>) =
         let menuItems, setMenuItems = React.useState options.MenuItems
         
         let userManager = options.Manager.UserManager
@@ -55,7 +55,7 @@ module Layout =
                             ]
                             Bulma.column [
                                 prop.children [
-                                    options.View
+                                    options.Element
                                 ]
                             ]
                         ]

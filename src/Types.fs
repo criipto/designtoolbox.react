@@ -14,9 +14,18 @@ module Types =
 
     type IViewManager<'view> =
         abstract member CurrentView : 'view with get,set
+    type IErrorManager<'err> = 
+        abstract member Errors : ('err list) with get
+        abstract member AddError : 'err -> unit
+        abstract member Clear : unit -> unit
 
-    type IManager<'view,'user> = 
+    type IManager<'err,'view,'user> = 
         abstract member ViewManager : IViewManager<'view> with get
         abstract member UserManager : IUserManager<'user> with get
+        abstract member ErrorManager : IErrorManager<'err> with get
+
+    type IDataManager<'SystemManager,'data> = 
+        abstract member Data : 'data with get,set
+        abstract member SystemManager : 'SystemManager with get
 
     type ViewRenderer<'view> = 'view -> ReactElement

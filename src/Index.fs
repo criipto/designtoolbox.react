@@ -6,8 +6,10 @@ open Feliz.Bulma
 [<AutoOpen>]
 module Components = 
       let Navbar(userButtonText : string,action) = Navbar.Navbar(userButtonText,action)
-      let SidePanelMenu<'menuItem,'user when 'menuItem : equality>(options : SidePanelMenu.SidePanelMenuOptions<'menuItem,'user>) = SidePanelMenu.SidePanelMenu(options)
-      let Table<'a>(options : Table.TableOptions<'a>,data : 'a list) = Table.Table(options,data)
-      let Layout<'view,'user when 'view: equality>(options : Layout.LayoutOptions<'view,'user>) = Layout.Layout(options)
-      let ViewPicker<'view,'user when 'view: equality and 'view : comparison> = ViewPicker.ViewPicker<'view,'user>
+      let SidePanelMenu(options) = SidePanelMenu.SidePanelMenu(options)
+      let Table(options) = Table.Table(options)
+      let Layout(options) = Layout.Layout(options)
+      let ViewPicker = ViewPicker.ViewPicker
+      let InlineEditor(options) = InlineEditor.InlineEditor options
+      let FileUpload(options) = FileUpload.FileUpload options
     

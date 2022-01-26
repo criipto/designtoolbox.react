@@ -11,13 +11,13 @@ module SidePanelMenu =
           Notification : int option
           IconName : string option
         }
-    type SidePanelMenuOptions<'menuItem,'user when 'menuItem : equality> = 
+    type SidePanelMenuOptions<'err,'menuItem,'user when 'menuItem : equality> = 
         {
             MenuItems : MenuItemOptions<'menuItem> list
-            Manager : IManager<'menuItem,'user>
+            Manager : IManager<'err,'menuItem,'user>
         }
     [<ReactComponent>]
-    let internal SidePanelMenu<'menuItem,'user when 'menuItem : equality>(options : SidePanelMenuOptions<'menuItem,'user>) = 
+    let internal SidePanelMenu<'err,'menuItem,'user when 'menuItem : equality>(options : SidePanelMenuOptions<'err,'menuItem,'user>) = 
         
         let createMenuItem (item : MenuItemOptions<_>) = 
             prop.children [

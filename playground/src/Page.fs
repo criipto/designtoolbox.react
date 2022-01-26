@@ -10,12 +10,13 @@ type View =
     | Goodbye
 
 [<ReactComponent>]
-let page() = 
+let Page() = 
     
     let currentView,setView = React.useState Hello
     let user,setUser = 0 |> Some |> React.useState
+    let errors,setErrors = React.useState []
     let manager = {
-        new IManager<_,_> with
+        new IManager<_,_,_> with
             member __.UserManager with get() = 
                     {
                         new IUserManager<int> with
@@ -32,8 +33,15 @@ let page() =
                             with get() = currentView
                             and set newView = setView newView
                 }
+            member __.ErrorManager with get() = 
+                {
+                    new IErrorManager<_> with
+                        member __.Errors with get() = errors
+                        member __.AddError (err : string) = err::errors |> setErrors
+                        member __.Clear() = [] |> setErrors
+                }
     }
-
+    let files,setFiles = React.useState Map.empty
     let views = 
        [
            Some Hello,fun _ ->
@@ -41,6 +49,17 @@ let page() =
                                 Bulma.title [
                                     prop.text "Hello"
                                 ]
+                                FileUpload ({
+                                    Manager = {
+                                        new IDataManager<_,Map<string,string>> with
+                                            member __.SystemManager with get() = manager
+                                            member __.Data 
+                                                    with get() = files
+                                                    and set value = setFiles value
+                                    }
+                                    InputFieldLabel = "Document to sign"
+                                    IsFullWidth = false
+                                } : FileUpload.FileUploadOptions<_>)
                                 Bulma.button.a [
                                     prop.text "Say goodbye"
                                     prop.onClick (fun _ -> manager.ViewManager.CurrentView <- Goodbye)
@@ -71,9 +90,9 @@ let page() =
     let layoutOptions  = 
         {
             MenuItems = menuItems
-            View = ViewPicker<View,int> views manager
+            Element = ViewPicker<string,View,int> views manager
             Manager = manager
-        } : Layout.LayoutOptions<View,int>
+        } : Layout.LayoutOptions<string,View,int>
     Bulma.container [
         Layout layoutOptions
     ]

@@ -37,13 +37,14 @@ module Table =
         Size : IconSize
     }
 
-    type TableOptions<'a> = {
-        ColumnOptions : ColumnOptions<'a> list
+    type TableOptions<'err,'view,'user,'data when 'view : equality> = {
+        ColumnOptions : ColumnOptions<'data> list
         TableClass : string option
         RowClass : string option
-        RowSelected : ('a -> unit) option
+        RowSelected : ('data -> unit) option
         Icon : IconOptions option
         Title : string option
+        Manager : Types.IDataManager<Types.IManager<'err,'view,'user>,'data list>
     }
     
     let inline private classNamesFromOption defaultClass classNames = 
@@ -53,7 +54,7 @@ module Table =
             System.String.Join(" ", defaultClass::cls)
 
     [<ReactComponent>]
-    let internal Table<'a>(options : TableOptions<'a>,data : 'a list) = 
+    let internal Table(options : TableOptions<_,_,_,_>) = 
         let header = 
             let headerRow = 
                 options.ColumnOptions
@@ -76,7 +77,7 @@ module Table =
                 headerRow
             ]
         let rows = 
-            data
+            options.Manager.Data
             |> List.map(fun row ->
                 let cells = 
                     options.ColumnOptions
@@ -129,7 +130,6 @@ module Table =
                 Bulma.cardContent [
                     if icon.IsSome then yield icon.Value
                     yield content
-                    
                 ]
             ]
         ]
