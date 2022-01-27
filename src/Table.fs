@@ -37,7 +37,7 @@ module Table =
         Size : IconSize
     }
 
-    type TableOptions<'err,'view,'user,'data when 'view : equality> = {
+    type TableOptions<'err,'view,'user,'data> = {
         ColumnOptions : ColumnOptions<'data> list
         TableClass : string option
         RowClass : string option

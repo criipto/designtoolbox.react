@@ -12,7 +12,7 @@ module InlineEditor =
     }
 
     [<ReactComponent>]
-    let InlineEditor<'err,'view,'user,'data when 'view : equality> (options : InlineEditorOptions<Types.IManager<'err,'view,'user>,'data>) = 
+    let InlineEditor<'err,'view,'user,'data> (options : InlineEditorOptions<Types.IManager<'err,'view,'user>,'data>) = 
         let isEditing, changeMode = React.useState false
         let tempData, setTempData = React.useState options.Manager.Data
         let internalManager = 

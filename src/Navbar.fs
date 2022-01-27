@@ -4,8 +4,12 @@ open Feliz
 open Feliz.Bulma
 
 module Navbar =
+    type NavbarOptions = {
+      UserButtonText : string
+      Action : unit -> unit
+    }
     [<ReactComponent>]
-    let internal Navbar(userButtonText : string,action) =
+    let internal Navbar(options : NavbarOptions) =
         
         Bulma.navbarMenu [
             Bulma.navbarStart.div [
@@ -30,7 +34,7 @@ module Navbar =
                 Bulma.navbarItem.div [
                     Bulma.buttons [
                         Bulma.button.a [  
-                            prop.onClick (fun _ -> action() )
+                            prop.onClick (fun _ -> options.Action() )
                             prop.style [
                                 style.backgroundColor.transparent
                                 style.borderStyle.none
@@ -39,7 +43,7 @@ module Navbar =
                             prop.children [
                                 Html.span [ 
                                     prop.className "navbar-item"
-                                    prop.text userButtonText
+                                    prop.text options.UserButtonText
                                 ]
                                 Html.div [
                                     "power-off-white" |> sprintf "icon %s" |> prop.className

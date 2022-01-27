@@ -5,13 +5,13 @@ open Feliz.Bulma
 open Criipto.React.Types
 
 module SidePanelMenu =
-    type MenuItemOptions<'a> = 
+    type MenuItemOptions<'menuItem> = 
         {
-          Data : 'a
+          Data : 'menuItem
           Notification : int option
           IconName : string option
         }
-    type SidePanelMenuOptions<'err,'menuItem,'user when 'menuItem : equality> = 
+    type SidePanelMenuOptions<'err,'menuItem,'user> = 
         {
             MenuItems : MenuItemOptions<'menuItem> list
             Manager : IManager<'err,'menuItem,'user>

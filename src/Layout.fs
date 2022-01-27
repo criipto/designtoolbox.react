@@ -25,14 +25,14 @@ module Layout =
         None -> 
             if userManager.HasRequestedAuthentication() |> not then
                 Html.div[
-                    Navbar("Log on",fun _ -> userManager.LogIn())
+                  Navbar({UserButtonText = "Log on"; Action = userManager.LogIn})
                 ]
             else
                userManager.Authenticate() 
                Html.div[]
         | Some user -> 
             Html.div[
-                Navbar("Log off",userManager.LogOut)
+                Navbar({UserButtonText = "Log off"; Action = userManager.LogOut})
                 Bulma.container [
                     Bulma.columns [
                         prop.style [

@@ -5,7 +5,7 @@ open Feliz.Bulma
 
 [<AutoOpen>]
 module Components = 
-      let Navbar(userButtonText : string,action) = Navbar.Navbar(userButtonText,action)
+      let Navbar(options) = Navbar.Navbar(options)
       let SidePanelMenu(options) = SidePanelMenu.SidePanelMenu(options)
       let Table(options) = Table.Table(options)
       let Layout(options) = Layout.Layout(options)
