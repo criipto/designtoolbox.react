@@ -9,6 +9,7 @@ open Person
 type View =
     Hello
     | Goodbye
+    | Error
 
 
 [<ReactComponent>]
@@ -19,7 +20,7 @@ let Page() =
     let errors,setErrors = React.useState []
     let (person : Person),setPerson = React.useState {Name = "me"; ShoeSize = 48}
     let files,setFiles = React.useState Map.empty
-    
+
     let manager = {
         new IManager<_,_,_> with
             member __.UserManager with get() = 
@@ -94,6 +95,10 @@ let Page() =
                                         prop.onClick (fun _ -> manager.ViewManager.CurrentView <- Hello)
                                     ]
                                 ] 
+           Some Error, fun _ ->
+               Fable.Core.JS.setInterval(fun () -> manager.ErrorManager.AddError (sprintf "This is #%d error" (errors.Length + 1))) 1000 |> ignore
+               Bulma.section []
+                           
        ]
     let menuItems = 
         views
@@ -112,6 +117,13 @@ let Page() =
             Element = ViewPicker<string,View,int> views manager
             Manager = manager
         } : Layout.LayoutOptions<string,View,int>
+    
     Bulma.container [
+        Bulma.section [
+            prop.className "errors"
+            prop.children 
+                ( errors
+                  |> List.map (fun e -> Html.div [Html.span e]))   
+        ]
         Layout layoutOptions
     ]

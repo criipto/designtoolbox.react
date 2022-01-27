@@ -52,8 +52,8 @@ module FileUpload =
                                             let content = 
                                                 (string evt.target?result).Split("base64,",2).[1]
                                             options.Manager.Data <- options.Manager.Data.Add(file.name,content)
-                                        reader.onerror <- fun evt ->
-                                            eprintfn "Error reading files"
+                                        reader.onerror <- fun _ ->
+                                            options.Manager.SystemManager.ErrorManager.AddError reader?error
                                         reader.readAsDataURL(file)
                                     )
                                 )

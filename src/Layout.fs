@@ -19,7 +19,7 @@ module Layout =
     [<ReactComponent>]
     let internal Layout<'err,'view,'user when 'view: equality>(options : LayoutOptions<'err,'view,'user>) =
         let menuItems, setMenuItems = React.useState options.MenuItems
-        
+       
         let userManager = options.Manager.UserManager
         match userManager.CurrentUser with
         None -> 
