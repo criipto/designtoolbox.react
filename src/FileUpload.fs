@@ -11,6 +11,7 @@ module FileUpload =
         InputFieldLabel : string
         IsFullWidth : bool
     }
+
     
     [<ReactComponent>]
     let FileUpload<'err,'view,'user> (options : FileUploadOptions<Types.IManager<'err,'view,'user>>) = 
@@ -18,6 +19,16 @@ module FileUpload =
             options.Manager.Data
             |> Map.toList
             |> List.map fst
+
+        let readFile (file : Browser.Types.File) = 
+            let reader = Browser.Dom.FileReader.Create()
+            reader.onload <- fun evt ->
+                let content = 
+                    (string evt.target?result).Split("base64,",2).[1].Trim()
+                options.Manager.Data <- options.Manager.Data.Add(file.name,content)
+            reader.onerror <- fun _ ->
+                options.Manager.SystemManager.ErrorManager.AddError reader?error
+            reader.readAsDataURL(file)
         
         Bulma.section [
             Bulma.section (
@@ -31,6 +42,23 @@ module FileUpload =
             Html.div [ 
                 "file " + if options.IsFullWidth then "is-fullwidth" else ""
                 |> prop.className
+                prop.onDrop (fun (ev : Browser.Types.DragEvent) ->
+                  printfn "on drop"
+                  ev.preventDefault()
+                  let files = 
+                    if ev.dataTransfer.items <> Fable.Core.JS.undefined then
+                      [for i in 0..ev.dataTransfer.items.length - 1 do
+                        let item = ev.dataTransfer.items.[i]
+                        if item.kind = "file" then yield item.getAsFile()]
+                    else
+                      [for i in 0..ev.dataTransfer.files.length - 1 ->
+                        ev.dataTransfer.files.[i]]
+                  files |> List.iter readFile
+                )
+                prop.onDragOver (fun ev ->
+                  printfn "on dragover"
+                  ev.preventDefault()
+                )
                 prop.children [
                     Html.label [ 
                         prop.className "file-label"
@@ -46,16 +74,7 @@ module FileUpload =
                                     files
                                     |> List.filter(fun file -> 
                                         options.Manager.Data |> Map.tryFind file.name |> Option.isNone
-                                    ) |> List.iter(fun file ->
-                                        let reader = Browser.Dom.FileReader.Create()
-                                        reader.onload <- fun evt ->
-                                            let content = 
-                                                (string evt.target?result).Split("base64,",2).[1]
-                                            options.Manager.Data <- options.Manager.Data.Add(file.name,content)
-                                        reader.onerror <- fun _ ->
-                                            options.Manager.SystemManager.ErrorManager.AddError reader?error
-                                        reader.readAsDataURL(file)
-                                    )
+                                    ) |> List.iter readFile
                                 )
                             ]
                             Html.span [
