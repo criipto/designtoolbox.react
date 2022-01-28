@@ -12,4 +12,5 @@ module Components =
       let ViewPicker = ViewPicker.ViewPicker
       let InlineEditor(options) = InlineEditor.InlineEditor options
       let FileUpload(options) = FileUpload.FileUpload options
+      let VerticalWizard(options) = VerticalWizard.VerticalWizard options
     

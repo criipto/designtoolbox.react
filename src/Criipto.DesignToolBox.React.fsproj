@@ -13,6 +13,7 @@
     <Compile Include="Table.fs" />
     <Compile Include="ViewPicker.fs" />
     <Compile Include="InlineEditor.fs" />
+    <Compile Include="VerticalWizard.fs" />
     <Compile Include="Layout.fs" />
     <Compile Include="Index.fs" />
   </ItemGroup>

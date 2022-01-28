@@ -11,6 +11,9 @@ type View =
     | Goodbye
     | Error
 
+type Step = 
+    Files of (string * string) list
+    | Person of Person
 
 [<ReactComponent>]
 let Page() = 
@@ -18,9 +21,13 @@ let Page() =
     let currentView,setView = React.useState Hello
     let user,setUser = 0 |> Some |> React.useState
     let errors,setErrors = React.useState []
-    let (person : Person),setPerson = React.useState {Name = "me"; ShoeSize = 48}
-    let files,setFiles = React.useState Map.empty
-
+    let wizardData,setWizardData = 
+        React.useState
+            [
+                Files []
+                Person {Name = None; ShoeSize = None}
+            ]
+    
     let manager = {
         new IManager<_,_,_> with
             member __.UserManager with get() = 
@@ -48,19 +55,60 @@ let Page() =
                 }
     }
     
-    let inlineEditor = 
+    let inlineEditor manager = 
         InlineEditor {
             DisplayElement = DisplayPerson
             EditElement = EditPerson
-            Manager = 
-                {
-                    new Types.IDataManager<_,Person> with
-                        member __.SystemManager with get() = manager
-                        member __.Data
-                                with get() = person
-                                and set value = setPerson value
-                }
+            Manager = manager
         }
+    let steps = 
+        [
+            fun activate (manager : Types.IDataManager<_,Step>)  -> 
+                let files = 
+                    match manager.Data with
+                    Files files -> files |> Map.ofList
+                    | step -> 
+                       eprintfn "Could not consume %A" step
+                       Map.empty
+                    
+
+                FileUpload ({
+                    Manager = {
+                        new Types.IDataManager<_,_> with
+                            member __.Data 
+                                     with get() = files
+                                     and set files = 
+                                            let filesList = 
+                                                files
+                                                |> Map.toList
+                                            manager.Data <- Files filesList
+                                            activate()
+                            member __.SystemManager with get() = manager.SystemManager
+                    }
+                    InputFieldLabel = "Document to sign"
+                    IsFullWidth = false
+                } : FileUpload.FileUploadOptions<_>)
+            fun activate (manager : Types.IDataManager<_,Step>) -> 
+                let person = 
+                    match manager.Data with
+                    Person person -> person
+                    | step ->
+                        eprintfn "Could not consume %A" step
+                        {
+                            Name = None
+                            ShoeSize = None
+                        }
+                inlineEditor 
+                    {
+                        new Types.IDataManager<_,_> with
+                            member __.SystemManager with get() = manager.SystemManager
+                            member __.Data
+                                    with get() = person
+                                    and set person = 
+                                        manager.Data <- Person person
+                                        activate()
+                    }
+        ]
     let views = 
        [
            Some Hello,fun _ ->
@@ -68,22 +116,20 @@ let Page() =
                                 Bulma.title [
                                     prop.text "Hello"
                                 ]
-                                FileUpload ({
-                                    Manager = {
-                                        new IDataManager<_,Map<string,string>> with
-                                            member __.SystemManager with get() = manager
-                                            member __.Data 
-                                                    with get() = files
-                                                    and set value = setFiles value
-                                    }
-                                    InputFieldLabel = "Document to sign"
-                                    IsFullWidth = false
-                                } : FileUpload.FileUploadOptions<_>)
-                                inlineEditor
                                 Bulma.button.a [
                                     prop.text "Say goodbye"
                                     prop.onClick (fun _ -> manager.ViewManager.CurrentView <- Goodbye)
                                 ]
+                                VerticalWizard({
+                                    Manager = {
+                                        new Types.IDataManager<_,_> with
+                                            member __.SystemManager with get() = manager
+                                            member __.Data 
+                                                     with get() = wizardData
+                                                     and set data = setWizardData data
+                                    }
+                                    Steps = steps
+                                } : VerticalWizard.VerticalWizardOptions<_,_>)
                             ]
            Some Goodbye,fun _ ->
                                 Bulma.container [
@@ -100,6 +146,7 @@ let Page() =
                Bulma.section []
                            
        ]
+
     let menuItems = 
         views
         |> List.map(fun (view,_) ->
@@ -109,13 +156,17 @@ let Page() =
                 IconName  = None
             } : SidePanelMenu.MenuItemOptions<_>
         )
-    
 
     let layoutOptions  = 
         {
             MenuItems = menuItems
             Element = ViewPicker<string,View,int> views manager
-            Manager = manager
+            Navbar = {
+                LogOutText = "Log out"
+                LogInText = "Log in"
+                Manager = manager
+                AppName = "Playground"
+            }
         } : Layout.LayoutOptions<string,View,int>
     
     Bulma.container [

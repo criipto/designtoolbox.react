@@ -7,8 +7,8 @@ open Fable.Core.JsInterop
 
 type Person = 
     {
-        Name : string
-        ShoeSize : int
+        Name : string option
+        ShoeSize : int option
     }
 
 [<ReactComponent>]
@@ -19,12 +19,12 @@ let EditPerson<'manager>(manager : Types.IDataManager<'manager,Person>) =
             Bulma.label "Name"
             Bulma.control.div [
                 Bulma.input.text [
-                    prop.placeholder "stylte"
-                    prop.value person.Name
-                    prop.onChange(fun (ev : Browser.Types.Event) ->
-                        let name : string = ev?target?value
-                        manager.Data <- { person with Name = name}
-                    )
+                    yield prop.placeholder "your name"
+                    if person.Name.IsSome then yield prop.value person.Name.Value
+                    yield prop.onChange(fun (ev : Browser.Types.Event) ->
+                                let name : string = ev?target?value
+                                manager.Data <- { person with Name = Some name}
+                            )
                 ]
             ]
         ]
@@ -32,11 +32,11 @@ let EditPerson<'manager>(manager : Types.IDataManager<'manager,Person>) =
             Bulma.label "Shoe size"
             Bulma.control.div [
                 Bulma.input.number [
-                    prop.placeholder "48"
-                    prop.value person.ShoeSize
-                    prop.onChange(fun (ev : Browser.Types.Event) ->
-                        let shoeSize = ev?target?value |> int
-                        manager.Data <- { person with ShoeSize = shoeSize}
+                    yield prop.placeholder "52"
+                    if person.ShoeSize.IsSome then yield prop.value person.ShoeSize.Value
+                    yield prop.onChange(fun (ev : Browser.Types.Event) ->
+                        let ok,shoeSize = System.Int32.TryParse (string ev?target?value)
+                        manager.Data <- { person with ShoeSize = if ok then Some shoeSize else None}
                     )
                 ]
             ]
@@ -50,10 +50,10 @@ let DisplayPerson(manager : Types.IDataManager<'manager,Person>) =
     Bulma.section [
         Bulma.field.div [
             Bulma.label "Name"
-            Html.span person.Name
+            Html.span (if person.Name.IsSome then person.Name.Value else "")
         ]
         Bulma.field.div [
-            Bulma.label "Shoe size"
-            Html.span person.Name
+            yield Bulma.label "Shoe size"
+            if person.ShoeSize.IsSome then yield Html.span person.ShoeSize.Value
         ]
     ]

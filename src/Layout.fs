@@ -2,19 +2,17 @@ namespace Criipto.React
 
 open Feliz
 open Feliz.Bulma
-open Fable.Core
 open Criipto.React.SidePanelMenu
 open Criipto.React.Navbar
 open Criipto.React.Types
-open Criipto.React.ViewPicker
 
 module Layout = 
     
-    type LayoutOptions<'err,'view,'user when 'view : equality> = {
+    type LayoutOptions<'err,'view,'user> = {
         MenuItems : MenuItemOptions<'view> list
+        Navbar : Navbar.NavbarOptions<'err,'view,'user>
         Element : ReactElement
-        Manager : IManager<'err,'view,'user>
-    }
+    } with member this.Manager with get() = this.Navbar.Manager
     
     [<ReactComponent>]
     let internal Layout<'err,'view,'user when 'view: equality>(options : LayoutOptions<'err,'view,'user>) =
@@ -25,14 +23,14 @@ module Layout =
         None -> 
             if userManager.HasRequestedAuthentication() |> not then
                 Html.div[
-                  Navbar({UserButtonText = "Log on"; Action = userManager.LogIn})
+                    Navbar(options.Navbar)
                 ]
             else
                userManager.Authenticate() 
                Html.div[]
         | Some user -> 
             Html.div[
-                Navbar({UserButtonText = "Log off"; Action = userManager.LogOut})
+                Navbar(options.Navbar)
                 Bulma.container [
                     Bulma.columns [
                         prop.style [
