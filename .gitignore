@@ -355,3 +355,4 @@ local.settings.json
 node_modules/
 .paket/
 **/.webpack/
+**/webfonts/

@@ -13,14 +13,13 @@ module VerticalWizard =
     [<ReactComponent>]
     let VerticalWizard<'manager,'data>(options : VerticalWizardOptions<'manager,'data>) = 
         let activated,setActivated = React.useState [0]
-        printfn "Activated: %A" activated
+        printf "Activated %A" activated
         let isActivated i = 
             activated |> List.contains i
         let activate i = 
-            printfn "Activating step %d" i
             fun () -> 
-                if i |> isActivated |> not then
-                    printfn "Execute Execute Execute"
+                printf "Activate %d" i
+                if i |> isActivated |> not && i < options.Steps.Length then
                     i::activated |> setActivated
         let steps = 
             options.Manager.Data

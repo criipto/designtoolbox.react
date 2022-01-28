@@ -31,11 +31,28 @@ module FileUpload =
             reader.readAsDataURL(file)
         
         Bulma.section [
-            Bulma.section (
+            Html.div (
                 fileNames
                 |> List.map(fun file -> 
+                    let iconName = 
+                        match (file.Split(".") |> Array.last).ToLower() with
+                        "jpg" | "png" | "jpeg" | "gif" -> "fa-file-image"
+                        | "pdf" -> "fa-file-pdf"
+                        | "doc" | "docx" -> "fa-file-word"
+                        | _  -> "fa-file-check"
                     Html.div [
-                        prop.text file
+                        prop.className "file-upload-item"
+                        prop.children [
+                            Bulma.icon [
+                                prop.children [
+                                    Html.i [
+                                         sprintf "fas %s" iconName |> prop.className
+                                    ]
+                                ]
+                            ]
+                            Html.span file
+                        ]
+                        
                     ]
                 )
             )

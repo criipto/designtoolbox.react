@@ -1,0 +1,10 @@
+
+@import "./fontawesome/all.min";
+
+$file-background : white;
+
+.file-upload-item {
+    background-color: $file-background;
+    padding: 16px;
+    margin-bottom: 6px;
+}
