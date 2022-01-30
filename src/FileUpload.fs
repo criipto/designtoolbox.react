@@ -24,16 +24,25 @@ module FileUpload =
             options.Manager.Data
             |> Map.toList
             |> List.map snd
-
-        let readFile (file : Browser.Types.File) = 
-            let reader = Browser.Dom.FileReader.Create()
-            reader.onload <- fun evt ->
-                let content = 
-                    (string evt.target?result).Split("base64,",2).[1].Trim()
-                options.Manager.Data <- options.Manager.Data.Add(file.name,{Content = content;Name = file.name;Size = file.size})
-            reader.onerror <- fun _ ->
-                options.Manager.SystemManager.ErrorManager.AddError reader?error
-            reader.readAsDataURL(file)
+  
+        let rec readFile (files : Browser.Types.File list) (readFiles : File list)=
+            match files with
+            [] -> 
+                options.Manager.Data <-
+                    readFiles
+                    |> List.fold(fun m f ->
+                        m.Add(f.Name,f)
+                    ) options.Manager.Data
+            | file::files -> 
+                let reader = Browser.Dom.FileReader.Create()
+                reader.onload <- fun evt ->
+                    let content = 
+                        (string evt.target?result).Split("base64,",2).[1].Trim()
+                    readFile files ({Content = content;Name = file.name;Size = file.size}::readFiles)
+                reader.onerror <- fun _ ->
+                    options.Manager.SystemManager.ErrorManager.AddError reader?error
+                    readFile files readFiles
+                reader.readAsDataURL(file)
         let fileSection = 
             let dragDropProps = 
                 [
@@ -42,13 +51,13 @@ module FileUpload =
                         ev.preventDefault()
                         let files = 
                             if ev.dataTransfer.items <> Fable.Core.JS.undefined then
-                            [for i in 0..ev.dataTransfer.items.length - 1 do
-                                let item = ev.dataTransfer.items.[i]
-                                if item.kind = "file" then yield item.getAsFile()]
+                                [ for i in 0..ev.dataTransfer.items.length - 1 do
+                                    let item = ev.dataTransfer.items.[i]
+                                    if item.kind = "file" then yield item.getAsFile() ]
                             else
-                            [for i in 0..ev.dataTransfer.files.length - 1 ->
-                                ev.dataTransfer.files.[i]]
-                        files |> List.iter readFile
+                                [ for i in 0..ev.dataTransfer.files.length - 1 ->
+                                    ev.dataTransfer.files.[i] ]
+                        readFile files  []
                     )
                     prop.onDragOver (fun ev ->
                         ev.preventDefault()
@@ -78,11 +87,8 @@ module FileUpload =
                                         ]
                                     ]
                                 ]
-                                Html.div [
-                                    Html.span file.Name
-                                ]
+                                Html.span file.Name
                             ]
-                            
                         ]
                     ) |> prop.children)
                     ::dragDropProps
@@ -104,11 +110,13 @@ module FileUpload =
                                 prop.onInput (fun ev -> 
                                     let files = 
                                         let files : Browser.Types.FileList = ev.target?files
-                                        [for i in 0..files.length - 1 -> files.Item i]    
-                                    files
-                                    |> List.filter(fun file -> 
-                                        options.Manager.Data |> Map.tryFind file.name |> Option.isNone
-                                    ) |> List.iter readFile
+                                        [for i in 0..files.length - 1 -> files.Item i]  
+                                    let files =   
+                                        files
+                                        |> List.filter(fun file -> 
+                                            options.Manager.Data |> Map.tryFind file.name |> Option.isNone
+                                        )
+                                    readFile files []
                                 )
                             ]
                             Html.span [

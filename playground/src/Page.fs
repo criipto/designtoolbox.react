@@ -12,7 +12,7 @@ type View =
     | Error
 
 type Step = 
-    Files of (string * string) list
+    Files of (string * FileUpload.File) list
     | Person of Person
 
 [<ReactComponent>]
@@ -81,6 +81,7 @@ let Page() =
                                             let filesList = 
                                                 files
                                                 |> Map.toList
+                                            printfn "File list: %A" (filesList |> List.map fst)
                                             manager.Data <- Files filesList
                                             activate()
                             member __.SystemManager with get() = manager.SystemManager
