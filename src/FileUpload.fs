@@ -87,8 +87,7 @@ module FileUpload =
                     ) |> prop.children)
                     ::dragDropProps
             Html.div props
-        
-                
+
         Bulma.section [
             fileSection
             Html.div [ 
