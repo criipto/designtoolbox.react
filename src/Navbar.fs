@@ -2,6 +2,7 @@ namespace Criipto.React
 
 open Feliz
 open Feliz.Bulma
+open Fable.Core.JsInterop
 
 module Navbar =
     type NavbarOptions<'err,'view,'user> = {
@@ -12,11 +13,17 @@ module Navbar =
     }
     [<ReactComponent>]
     let internal Navbar<'err,'view,'user>(options : NavbarOptions<'err,'view,'user>) =
+        
         let userButtonText,action = 
             if options.Manager.UserManager.CurrentUser |> Option.isSome then
-                options.LogOutText, (fun (_:Browser.Types.MouseEvent) -> options.Manager.UserManager.LogOut())
+                printfn "User: %A" options.Manager.UserManager.CurrentUser 
+                options.LogOutText, (fun (_:Browser.Types.MouseEvent) -> 
+                    options.Manager.UserManager.LogOut()
+                )
             else
-                options.LogInText, (fun (_:Browser.Types.MouseEvent) -> options.Manager.UserManager.LogIn())
+                options.LogInText, (fun (_:Browser.Types.MouseEvent) -> 
+                    options.Manager.UserManager.LogIn()
+                )
         Bulma.navbarMenu [
             Bulma.navbarStart.div [
                 Bulma.navbarItem.div [

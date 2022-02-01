@@ -19,7 +19,7 @@ type Step =
 let Page() = 
     
     let currentView,setView = React.useState Hello
-    let user,setUser = 0 |> Some |> React.useState
+    let user,setUser = None|> React.useState
     let errors,setErrors = React.useState []
     let wizardData,setWizardData = 
         React.useState
@@ -34,10 +34,13 @@ let Page() =
             member __.UserManager with get() = 
                     {
                         new IUserManager<int> with
-                            member __.HasRequestedAuthentication() = true
-                            member __.LogIn() = ()
-                            member __.LogOut() = ()
-                            member __.Authenticate() = ()
+                            member __.HasRequestedAuthentication() = false
+                            member __.LogIn() = 
+                                0 |> Some |> setUser
+                            member __.LogOut() = 
+                                None |> setUser
+                            member this.Authenticate() = 
+                                Fable.Core.JS.setTimeout(this.LogIn) 1000 |> ignore
                             member __.CurrentUser with get() = user
                     }
             member __.ViewManager with get() = 
@@ -132,7 +135,7 @@ let Page() =
 
     let views = 
        [
-           Some Hello,fun _ ->
+            Some Hello,fun _ ->
                             Bulma.container [
                                 Bulma.title [
                                     prop.text "Hello"
@@ -146,7 +149,7 @@ let Page() =
                                     Steps = steps
                                 } : VerticalWizard.VerticalWizardOptions<_,_,_>)
                             ]
-           Some Goodbye,fun _ ->
+            Some Goodbye,fun _ ->
                                 Bulma.container [
                                     Bulma.title [
                                         prop.text "Goodbye"
@@ -156,14 +159,17 @@ let Page() =
                                         prop.onClick (fun _ -> manager.ViewManager.CurrentView <- Hello)
                                     ]
                                 ] 
-           Some Error, fun _ ->
+            Some Error, fun _ ->
                Fable.Core.JS.setInterval(fun () -> manager.ErrorManager.AddError (sprintf "This is #%d error" (errors.Length + 1))) 1000 |> ignore
-               Bulma.section []
+               Bulma.section [Html.h1 "Creating an error after 1s"]
+            None, fun _ ->
+                Bulma.section [Html.h1 "Default view"]
                            
        ]
 
     let menuItems = 
         views
+        |> List.filter (fst >> Option.isSome)
         |> List.map(fun (view,_) ->
             {
                 Data = view.Value

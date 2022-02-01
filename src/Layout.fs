@@ -16,8 +16,6 @@ module Layout =
     
     [<ReactComponent>]
     let internal Layout<'err,'view,'user when 'view: equality>(options : LayoutOptions<'err,'view,'user>) =
-        let menuItems, setMenuItems = React.useState options.MenuItems
-       
         let userManager = options.Manager.UserManager
         match userManager.CurrentUser with
         None -> 
@@ -27,7 +25,7 @@ module Layout =
                 ]
             else
                userManager.Authenticate() 
-               Html.div[]
+               Html.div[Html.h1 "Authenticating..."]
         | Some user -> 
             Html.div[
                 Navbar(options.Navbar)
@@ -46,7 +44,7 @@ module Layout =
                                 column.isOneFifthFullHd
                                 prop.children[
                                     SidePanelMenu({
-                                        MenuItems = menuItems
+                                        MenuItems = options.MenuItems
                                         Manager = options.Manager 
                                     })
                                 ]

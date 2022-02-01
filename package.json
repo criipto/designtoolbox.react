@@ -16,7 +16,8 @@
     "homepage": "https://github.com/criipto/react#readme",
     "scripts": {
         "prebuild": "dotnet tool restore && npm install",
-        "build": "dotnet fable ./src --outDir .output/"
+        "build": "dotnet fable ./src --outDir .output/",
+        "devBuild" : "dotnet fable watch ./src --outDir playground-react/node_modules/@criipto/designtoolbox.react"
     },
     "devDependencies": {
         "core-js": "^3.20.2"

@@ -18,6 +18,7 @@
     "@testing-library/react": "^11.2.6",
     "@web/test-runner": "^0.13.3",
     "chai": "^4.3.4",
+    "npm-watch": "^0.11.0",
     "prettier": "^2.2.1",
     "snowpack": "^3.3.7"
   }
