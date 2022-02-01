@@ -24,8 +24,9 @@ module Types =
         abstract member UserManager : IUserManager<'user> with get
         abstract member ErrorManager : IErrorManager<'err> with get
 
-    type IDataManager<'SystemManager,'data> = 
+    [<AbstractClass>]
+    type DataManager<'SystemManager,'data>(manager) = 
         abstract member Data : 'data with get,set
-        abstract member SystemManager : 'SystemManager with get
-
+        member __.SystemManager with get() : 'SystemManager = manager
+    
     type ViewRenderer<'view> = 'view -> ReactElement

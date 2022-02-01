@@ -23,10 +23,11 @@ let Page() =
     let errors,setErrors = React.useState []
     let wizardData,setWizardData = 
         React.useState
-            [
-                Files []
-                Person {Name = None; ShoeSize = None}
-            ]
+            {|
+               Files = [] 
+               Person = {Name = None; ShoeSize = None}
+            |}
+            
     
     let manager = {
         new IManager<_,_,_> with
@@ -61,55 +62,74 @@ let Page() =
             EditElement = EditPerson
             Manager = manager
         }
+    
     let steps = 
+        let stepsDataManager = 
+            { new DataManager<_,_>(manager) with
+                member __.Data 
+                        with get() = wizardData
+                        and set data = 
+                            printfn "Updating wizard %A" data
+                            setWizardData data
+            }
         [
-            fun activate (manager : Types.IDataManager<_,Step>)  -> 
-                let files = 
-                    match manager.Data with
-                    Files files -> files |> Map.ofList
-                    | step -> 
-                       eprintfn "Could not consume %A" step
-                       Map.empty
+            {
+                new VerticalWizard.Step<_,_>(stepsDataManager) with
                     
-
-                FileUpload ({
-                    Manager = {
-                        new Types.IDataManager<_,_> with
-                            member __.Data 
-                                     with get() = files
-                                     and set files = 
-                                            let filesList = 
-                                                files
-                                                |> Map.toList
-                                            printfn "File list: %A" (filesList |> List.map fst)
-                                            manager.Data <- Files filesList
-                                            activate()
-                            member __.SystemManager with get() = manager.SystemManager
-                    }
-                    InputFieldLabel = "Document to sign"
-                    IsFullWidth = false
-                } : FileUpload.FileUploadOptions<_>)
-            fun activate (manager : Types.IDataManager<_,Step>) -> 
-                let person = 
-                    match manager.Data with
-                    Person person -> person
-                    | step ->
-                        eprintfn "Could not consume %A" step
-                        {
-                            Name = None
-                            ShoeSize = None
-                        }
-                inlineEditor 
-                    {
-                        new Types.IDataManager<_,_> with
-                            member __.SystemManager with get() = manager.SystemManager
-                            member __.Data
-                                    with get() = person
-                                    and set person = 
-                                        manager.Data <- Person person
-                                        activate()
-                    }
+                    override __.DisabledView  with get() = 
+                        Html.div [ prop.className "disabled"; prop.children [Html.h1 "Select documents to sign" ]]
+                    override this.ShowingView with get() = 
+                        FileUpload ({
+                            Manager = {
+                                new DataManager<_,_>(manager) with
+                                    member __.Data 
+                                            with get() = stepsDataManager.Data.Files
+                                            and set files = 
+                                                    stepsDataManager.Data <- {| stepsDataManager.Data with Files = files |}
+                            }
+                            InputFieldLabel = "Document to sign"
+                            IsFullWidth = false
+                        } : FileUpload.FileUploadOptions<_>)
+                    override __.SummaryView with get() = 
+                        Html.div [ prop.className "summary"; prop.children [Html.h1 "Select documents to sign" ]]
+                    override __.PreviousButton = None
+                    override __.NextButton = 
+                        Html.span [
+                            prop.className "is-pulled-right"
+                            prop.text "Next"
+                        ] |> Some
+            } :> VerticalWizard.IStep
+            
+            {
+                new VerticalWizard.Step<_,_>(stepsDataManager) with
+                    
+                    override __.DisabledView  with get() = 
+                        Html.div [ prop.className "disabled"; prop.children [Html.h1 "Select documents to sign" ]]
+                    override __.ShowingView with get() = 
+                        
+                        inlineEditor 
+                            {
+                                new DataManager<_,_>(manager) with
+                                    member __.Data
+                                            with get() = stepsDataManager.Data.Person
+                                            and set person = 
+                                                stepsDataManager.Data <- {| stepsDataManager.Data with Person = person |} 
+                            }
+                    override __.SummaryView with get() = 
+                        Html.div [ prop.className "summary"; prop.children [Html.h1 "Select documents to sign" ]]
+                    override __.PreviousButton = 
+                        Html.span [
+                            prop.className "is-pulled-left"
+                            prop.text "Previous"
+                        ] |> Some
+                    override __.NextButton = 
+                        Html.span [
+                            prop.className "is-pulled-right"
+                            prop.text "Next"
+                        ] |> Some
+            }
         ]
+
     let views = 
        [
            Some Hello,fun _ ->
@@ -122,15 +142,9 @@ let Page() =
                                     prop.onClick (fun _ -> manager.ViewManager.CurrentView <- Goodbye)
                                 ]
                                 VerticalWizard({
-                                    Manager = {
-                                        new Types.IDataManager<_,_> with
-                                            member __.SystemManager with get() = manager
-                                            member __.Data 
-                                                     with get() = wizardData
-                                                     and set data = setWizardData data
-                                    }
+                                    Manager = manager
                                     Steps = steps
-                                } : VerticalWizard.VerticalWizardOptions<_,_>)
+                                } : VerticalWizard.VerticalWizardOptions<_,_,_>)
                             ]
            Some Goodbye,fun _ ->
                                 Bulma.container [

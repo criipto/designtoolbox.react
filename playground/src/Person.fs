@@ -12,7 +12,7 @@ type Person =
     }
 
 [<ReactComponent>]
-let EditPerson<'manager>(manager : Types.IDataManager<'manager,Person>) = 
+let EditPerson<'manager>(manager : DataManager<'manager,Person>) = 
     let person = manager.Data
     Bulma.section [
         Bulma.field.div [
@@ -45,7 +45,7 @@ let EditPerson<'manager>(manager : Types.IDataManager<'manager,Person>) =
 
 
 [<ReactComponent>]
-let DisplayPerson(manager : Types.IDataManager<'manager,Person>) =
+let DisplayPerson(manager : DataManager<_,Person>) =
     let person = manager.Data 
     Bulma.section [
         Bulma.field.div [

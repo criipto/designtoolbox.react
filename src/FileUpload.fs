@@ -14,27 +14,29 @@ module FileUpload =
     }
 
     type FileUploadOptions<'manager> = {
-        Manager : Types.IDataManager<'manager,Map<string,File>>
+        Manager : DataManager<'manager,File list>
         InputFieldLabel : string
         IsFullWidth : bool
     }
     
     [<ReactComponent>]
     let FileUpload<'err,'view,'user> (options : FileUploadOptions<Types.IManager<'err,'view,'user>>) = 
-        let files = 
+        let files,_setFiles = 
             options.Manager.Data
-            |> Map.toList
-            |> List.map snd
             |> List.sortBy (fun f -> f.Rank)
-  
+            |> React.useState
+        
         let rec readFile (files : Browser.Types.File list) (readFiles : File list)=
             match files with
             [] -> 
-                options.Manager.Data <-
+                let files = 
                     readFiles
-                    |> List.fold(fun m f ->
-                        m.Add(f.Name,f)
+                    |> List.fold(fun lst f ->
+                        f::lst
                     ) options.Manager.Data
+                _setFiles files
+                options.Manager.Data <- files
+
             | file::files -> 
                 let reader = Browser.Dom.FileReader.Create()
                 reader.onload <- fun evt ->
@@ -46,8 +48,47 @@ module FileUpload =
                     readFile files readFiles
                 reader.readAsDataURL(file)
         let fileSection = 
-            let dragDropProps = 
-                [
+            let swap i j =
+                if i > (files.Length - 1) then 
+                    failwithf "Index too high (%d)" i
+                elif i < 0 then
+                    failwithf "Index mustbe positive (%d)" i
+                elif j = -1 then
+                    fun _ -> () //no-op it's the first element being moved up
+                elif j = files.Length then
+                    fun _ -> () //no-op it's the last element being moved down
+                else
+                    fun _ ->
+                        options.Manager.Data <- 
+                            files
+                            |> List.map(fun f -> 
+                                if j = f.Rank then
+                                    { f with Rank = i}
+                                elif i = f.Rank then
+                                    { f with Rank = j}
+                                else
+                                    f
+                            )
+            let removeAt index = 
+                if index > files.Length then
+                    failwithf "Index too high (%d)" index
+                elif index < 0 then
+                    failwithf "Index mustbe positive (%d)" index
+                else
+                    fun _ -> 
+                        options.Manager.Data <-
+                            files
+                            |> List.indexed
+                            |> List.fold(fun lst (i,f) -> 
+                                if i <> index then 
+                                    f::lst
+                                else
+                                    lst
+                            ) []
+                        
+            Bulma.container [  
+                Html.div [
+                    prop.className "file-drop-zone"
                     prop.onDrop (fun (ev : Browser.Types.DragEvent) ->
                         ev.preventDefault()
                         let newFiles = 
@@ -64,102 +105,55 @@ module FileUpload =
                         ev.preventDefault()
                     )
                 ]
-            let props = 
-                match files with
-                [] ->
-                    prop.className "file-drop-zone"
-                    ::dragDropProps
-                | _ ->
-                    let swap i j =
-                        if i > (files.Length - 1) then 
-                            failwithf "Index too high (%d)" i
-                        elif i < 0 then
-                            failwithf "Index mustbe positive (%d)" i
-                        elif j = -1 then
-                            fun _ -> () //no-op it's the first element being moved up
-                        elif j = files.Length then
-                            fun _ -> () //no-op it's the last element being moved down
-                        else
-                            fun _ ->
-                                options.Manager.Data <- 
-                                    files
-                                    |> List.map(fun f -> 
-                                        f.Name,
-                                            if j = f.Rank then
-                                                { f with Rank = i}
-                                            elif i = f.Rank then
-                                                { f with Rank = j}
-                                            else
-                                                f
-                                    )
-                                    |> Map.ofList
-                    let removeAt index = 
-                        if index > files.Length then
-                            failwithf "Index too high (%d)" index
-                        elif index < 0 then
-                            failwithf "Index mustbe positive (%d)" index
-                        else
-                            fun _ -> 
-                                options.Manager.Data <-
-                                    files
-                                    |> List.indexed
-                                    |> List.fold(fun m (i,f) -> 
-                                        if i <> index then 
-                                            m.Add(f.Name,f)
-                                        else
-                                            m
-                                    ) Map.empty
-                                
-                    (files
-                    |> List.mapi(fun i file -> 
-                        let iconName = 
-                            match (file.Name.Split(".") |> Array.last).ToLower() with
-                            "jpg" | "png" | "jpeg" | "gif" -> "fa-file-image"
-                            | "pdf" -> "fa-file-pdf"
-                            | "doc" | "docx" -> "fa-file-word"
-                            | _  -> "fa-file-check"
-                        Html.div [
-                            prop.className "file-upload-item"
-                            prop.children [
-                                Bulma.icon [
-                                    prop.children [
-                                        Html.i [
-                                            sprintf "fas %s" iconName |> prop.className
-                                        ]
+                files
+                |> List.mapi(fun i file -> 
+                    let iconName = 
+                        match (file.Name.Split(".") |> Array.last).ToLower() with
+                        "jpg" | "png" | "jpeg" | "gif" -> "fa-file-image"
+                        | "pdf" -> "fa-file-pdf"
+                        | "doc" | "docx" -> "fa-file-word"
+                        | _  -> "fa-file-check"
+                    Html.div [
+                        prop.className "file-upload-item"
+                        prop.children [
+                            Bulma.icon [
+                                prop.children [
+                                    Html.i [
+                                        sprintf "fas %s" iconName |> prop.className
                                     ]
-                                ]
-                                Html.span file.Name
-                                Bulma.icon [
-                                    prop.children [
-                                        Html.i [
-                                            if i = 0 then yield prop.className "action-disabled"
-                                            yield "fas fa-angle-up" |> prop.className
-                                        ]
-                                    ]
-                                    prop.onClick(i - 1 |> swap i )
-                                ]
-                                Bulma.icon [
-                                    prop.children [
-                                        Html.i [
-                                            if i = files.Length - 1 then yield prop.className "action-disabled"
-                                            yield "fas fa-angle-down" |> prop.className
-                                        ]
-                                    ]
-                                    prop.onClick(i + 1 |> swap i)
-                                ]
-                                Bulma.icon [
-                                    prop.children [
-                                        Html.i [
-                                            "fas fa-times" |> prop.className
-                                        ]
-                                    ]
-                                    prop.onClick(removeAt i)
                                 ]
                             ]
+                            Html.span file.Name
+                            Bulma.icon [
+                                prop.children [
+                                    Html.i [
+                                        if i = 0 then yield prop.className "action-disabled"
+                                        yield "fas fa-angle-up" |> prop.className
+                                    ]
+                                ]
+                                prop.onClick(i - 1 |> swap i )
+                            ]
+                            Bulma.icon [
+                                prop.children [
+                                    Html.i [
+                                        if i = files.Length - 1 then yield prop.className "action-disabled"
+                                        yield "fas fa-angle-down" |> prop.className
+                                    ]
+                                ]
+                                prop.onClick(i + 1 |> swap i)
+                            ]
+                            Bulma.icon [
+                                prop.children [
+                                    Html.i [
+                                        "fas fa-times" |> prop.className
+                                    ]
+                                ]
+                                prop.onClick(removeAt i)
+                            ]
                         ]
-                    ) |> prop.children)
-                    ::dragDropProps
-            Html.div props
+                    ]
+                ) |> Html.div 
+            ]
 
         Bulma.section [
             fileSection
@@ -181,7 +175,7 @@ module FileUpload =
                                     let files =   
                                         files
                                         |> List.filter(fun file -> 
-                                            options.Manager.Data |> Map.tryFind file.name |> Option.isNone
+                                            options.Manager.Data |> List.tryFind(fun f -> f.Name = file.name) |> Option.isNone
                                         )
                                     readFile files []
                                 )

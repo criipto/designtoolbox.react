@@ -44,7 +44,7 @@ module Table =
         RowSelected : ('data -> unit) option
         Icon : IconOptions option
         Title : string option
-        Manager : Types.IDataManager<Types.IManager<'err,'view,'user>,'data list>
+        Manager : DataManager<Types.IManager<'err,'view,'user>,'data list>
     }
     
     let inline private classNamesFromOption defaultClass classNames = 

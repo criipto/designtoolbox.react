@@ -6,9 +6,9 @@ open Feliz.Bulma
 module InlineEditor = 
 
     type InlineEditorOptions<'manager,'data> = {
-        DisplayElement : Types.IDataManager<'manager,'data> -> ReactElement
-        EditElement : Types.IDataManager<'manager,'data> -> ReactElement
-        Manager : Types.IDataManager<'manager,'data>
+        DisplayElement : DataManager<'manager,'data> -> ReactElement
+        EditElement : DataManager<'manager,'data> -> ReactElement
+        Manager : DataManager<'manager,'data>
     }
 
     [<ReactComponent>]
@@ -17,8 +17,7 @@ module InlineEditor =
         let tempData, setTempData = React.useState options.Manager.Data
         let internalManager = 
             {
-                new Types.IDataManager<_,_> with
-                    member __.SystemManager with get() = options.Manager.SystemManager
+                new DataManager<_,_>(options.Manager.SystemManager) with
                     member __.Data
                             //edits are made to a temp copy of the data
                             with get() = tempData
