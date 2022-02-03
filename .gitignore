@@ -356,3 +356,5 @@ node_modules/
 .paket/
 **/.webpack/
 **/webfonts/
+src/*.js
+src/*.js.map
